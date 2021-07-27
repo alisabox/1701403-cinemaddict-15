@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Alisa](https://up.htmlacademy.ru/ecmascript/15/user/1701403).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Лепёшкин](https://htmlacademy.ru/profile/id144641).
 
 ---
 
