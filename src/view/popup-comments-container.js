@@ -1,10 +1,10 @@
+import { createElement } from './utils';
+
 const createPopupCommentContainer = (films) => {
   const {comments} = films;
 
   return `<section class="film-details__comments-wrap">
     <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length || 0}</span></h3>
-
-    <ul class="film-details__comments-list"></ul>
 
     <div class="film-details__new-comment">
       <div class="film-details__add-emoji-label"></div>
@@ -37,5 +37,25 @@ const createPopupCommentContainer = (films) => {
     </div>
   </section>`;
 };
+export default class PopupCommentContainer {
+  constructor(films) {
+    this._films = films;
+    this._element = null;
+  }
 
-export {createPopupCommentContainer};
+  getTemplate() {
+    return createPopupCommentContainer(this._films);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

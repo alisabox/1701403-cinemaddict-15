@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { createElement } from './utils';
 
 const createPopup = ({filmInfo}) => {
   const {title, totalRating, genre, description, poster, ageRating, alternativeTitle, director, release, writers, actors} = filmInfo;
@@ -79,5 +80,25 @@ const createPopup = ({filmInfo}) => {
     </form>
   </section>`;
 };
+export default class Popup {
+  constructor(films) {
+    this._films = films;
+    this._element = null;
+  }
 
-export {createPopup};
+  getTemplate() {
+    return createPopup(this._films);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
