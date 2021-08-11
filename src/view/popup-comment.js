@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 dayjs.extend(calendar);
 
+import { createElement } from './utils';
 
 const createPopupComment = ({comments}) => {
   if (comments === false) {
@@ -30,8 +31,27 @@ const createPopupComment = ({comments}) => {
       </div>
     </li>`;
   }).join('');
-
-  return commentsList;
+  return `<ul class="film-details__comments-list">${commentsList}</ul>`;
 };
+export default class PopupComment {
+  constructor(films) {
+    this._films = films;
+    this._element = null;
+  }
 
-export {createPopupComment};
+  getTemplate() {
+    return createPopupComment(this._films);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,19 +1,19 @@
 import { createElement } from './utils';
 
-const createUserStatus = () => (
-  `<section class="header__profile profile">
-    <p class="profile__rating">Movie Buff</p>
-    <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
+const createFilmsMostCommented = () => (
+  `<section class="films-list films-list--extra">
+    <h2 class="films-list__title">Most commented</h2>
+    <div class="films-list__container"></div>
   </section>`
 );
 
-export default class UserStatus {
+export default class FilmsMostCommented {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createUserStatus();
+    return createFilmsMostCommented();
   }
 
   getElement() {

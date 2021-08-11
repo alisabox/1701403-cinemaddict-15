@@ -1,12 +1,4 @@
-const createFilmsContainer = () => (
-  '<section class="films"></section>'
-);
-
-const createEmptyList = () => (
-  `<section class="films-list">
-    <h2 class="films-list__title">There are no movies in our database</h2>
-  </section>`
-);
+import { createElement } from './utils';
 
 const createFilmsList = () => (
   `<section class="films-list">
@@ -15,18 +7,24 @@ const createFilmsList = () => (
   </section>`
 );
 
-const createFilmsTopRated = () => (
-  `<section class="films-list films-list--extra">
-    <h2 class="films-list__title">Top rated</h2>
-    <div class="films-list__container"></div>
-  </section>`
-);
+export default class FilmsList {
+  constructor() {
+    this._element = null;
+  }
 
-const createFilmsMostCommented = () => (
-  `<section class="films-list films-list--extra">
-    <h2 class="films-list__title">Most commented</h2>
-    <div class="films-list__container"></div>
-  </section>`
-);
+  getTemplate() {
+    return createFilmsList();
+  }
 
-export {createFilmsContainer, createEmptyList, createFilmsList, createFilmsTopRated, createFilmsMostCommented};
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

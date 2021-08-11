@@ -1,3 +1,5 @@
+import { createElement } from './utils';
+
 const createMenuElement = (films) => (
   `<nav class="main-navigation">
     <div class="main-navigation__items">
@@ -10,4 +12,25 @@ const createMenuElement = (films) => (
   </nav>`
 );
 
-export {createMenuElement};
+export default class SiteMenu {
+  constructor(films) {
+    this._films = films;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMenuElement(this._films);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
