@@ -1,16 +1,17 @@
 import { createElement } from './utils';
 
-const createFooterStats = () => (
-  '<p>130 291 movies inside</p>'
+const createFooterStats = (films) => (
+  `<p>${films.length} movies inside</p>`
 );
 
 export default class FooterStats {
-  constructor() {
+  constructor(films) {
+    this._films = films;
     this._element = null;
   }
 
   getTemplate() {
-    return createFooterStats();
+    return createFooterStats(this._films);
   }
 
   getElement() {
