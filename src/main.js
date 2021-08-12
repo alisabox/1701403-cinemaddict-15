@@ -46,9 +46,12 @@ const filmsTopRated = new FilmsTopRatedView();
 const filmsMostCommented = new FilmsMostCommentedView();
 
 renderElement(main, filmsContainer.getElement(), RenderPosition.BEFOREEND);
-renderElement(filmsContainer.getElement(), filmsList.getElement(), RenderPosition.BEFOREEND);
-renderElement(filmsContainer.getElement(), filmsTopRated.getElement(), RenderPosition.BEFOREEND);
-renderElement(filmsContainer.getElement(), filmsMostCommented.getElement(), RenderPosition.BEFOREEND);
+
+if (films.length === 0) {
+  renderElement(filmsContainer.getElement(), new EmptyListView().getElement(), RenderPosition.BEFOREEND);
+} else {
+  renderElement(filmsContainer.getElement(), filmsList.getElement(), RenderPosition.BEFOREEND);
+}
 
 const renderFilmInfo = (container, film) => {
   const filmCard = new FilmCardView(film);
@@ -106,20 +109,21 @@ if (films.length > FILM_CARDS_PER_STEP) {
   });
 }
 
-if (mostRatedFilms.length > 0) {
+if (mostRatedFilms && mostRatedFilms.length > 0) {
+  renderElement(filmsContainer.getElement(), filmsTopRated.getElement(), RenderPosition.BEFOREEND);
   for (let i = 0; i < mostRatedFilms.length; i++) {
     renderFilmInfo(filmsTopRated.getElement().querySelector('.films-list__container'), mostRatedFilms[i]);
   }
 }
 
-if (mostCommentedFilms.length > 0) {
+if (mostRatedFilms && mostCommentedFilms.length > 0) {
+  renderElement(filmsContainer.getElement(), filmsMostCommented.getElement(), RenderPosition.BEFOREEND);
   for (let i = 0; i < mostCommentedFilms.length; i++) {
     renderFilmInfo(filmsMostCommented.getElement().querySelector('.films-list__container'), mostCommentedFilms[i]);
   }
 }
 
-renderElement(footerStats, new FooterStatsView().getElement(), RenderPosition.BEFOREEND);
+renderElement(footerStats, new FooterStatsView(films).getElement(), RenderPosition.BEFOREEND);
 
 LoadingView;
-EmptyListView;
 StatsView;
