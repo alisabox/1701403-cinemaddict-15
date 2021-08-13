@@ -1,25 +1,31 @@
+import Abstract from './abstract.js';
+
 const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
   AFTER: 'after',
 };
 
-const renderElement = (container, element, place) => {
+const render = (container, child, place) => {
+  if (container instanceof Abstract) {
+    container = container.getElement();
+  }
+
+  if (child instanceof Abstract) {
+    child = child.getElement();
+  }
+
   switch (place) {
     case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
+      container.prepend(child);
       break;
     case RenderPosition.BEFOREEND:
-      container.append(element);
+      container.append(child);
       break;
     case RenderPosition.AFTER:
-      container.after(element);
+      container.after(child);
       break;
   }
-};
-
-const renderTemplate = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
 };
 
 const createElement = (template) => {
@@ -28,4 +34,13 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export {RenderPosition, renderElement, renderTemplate, createElement};
+const remove = (component) => {
+  if (!(component instanceof Abstract)) {
+    throw new Error('Can remove only components');
+  }
+
+  component.getElement().remove();
+  component.removeElement();
+};
+
+export {RenderPosition, render, remove, createElement};

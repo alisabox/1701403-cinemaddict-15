@@ -1,4 +1,4 @@
-import { createElement } from './utils';
+import AbstractView from './abstract.js';
 
 const createPopupCommentContainer = (films) => {
   const {comments} = films;
@@ -37,25 +37,13 @@ const createPopupCommentContainer = (films) => {
     </div>
   </section>`;
 };
-export default class PopupCommentContainer {
+export default class PopupCommentContainer extends AbstractView {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createPopupCommentContainer(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

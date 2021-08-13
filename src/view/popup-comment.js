@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 dayjs.extend(calendar);
 
-import { createElement } from './utils';
+import AbstractView from './abstract.js';
 
 const createPopupComment = ({comments}) => {
   if (comments === false) {
@@ -33,25 +33,13 @@ const createPopupComment = ({comments}) => {
   }).join('');
   return `<ul class="film-details__comments-list">${commentsList}</ul>`;
 };
-export default class PopupComment {
+export default class PopupComment extends AbstractView {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createPopupComment(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
