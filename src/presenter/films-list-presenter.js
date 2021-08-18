@@ -97,14 +97,14 @@ export default class FilmsList {
     this._filmsPresenter.set(film.id, filmPresenter);
   }
 
-  // _clearFilmsList() {
-  //   remove(this._filmsList);
-  //   remove(this._showMoreButton);
-  //   remove(this._filmsTopRated);
-  //   remove(this._filmsMostCommented);
-  //   this._shownFilmsCount = FILM_CARDS_PER_STEP;
-  //   this._filmsMapByID.clear();
-  // }
+  _clearFilmsList() {
+    remove(this._filmsList);
+    remove(this._showMoreButton);
+    remove(this._filmsTopRated);
+    remove(this._filmsMostCommented);
+    this._shownFilmsCount = FILM_CARDS_PER_STEP;
+    this._filmsMapByID.clear();
+  }
 
   _handleShowMoreButtonClick() {
     this._films
