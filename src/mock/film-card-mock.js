@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
 const MAX_COMMENTS = 5;
 const FILM_YEARS_RANGE = 50;
@@ -193,7 +194,7 @@ const createFilmCard = () => {
   const favorite = Boolean(getRandomIndex(0, 1));
 
   return {
-    id: '0',
+    id: nanoid(),
     comments,
     filmInfo: {
       title: generateFilmTitle(),
