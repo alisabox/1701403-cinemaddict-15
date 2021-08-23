@@ -10,9 +10,6 @@ const createPopup = ({filmInfo, userDetails}) => {
   const genresList = genre.map((item) => `<span class="film-details__genre">${item}</span>`).join('');
 
   const ACTIVE_STATE = 'film-details__control-button--active';
-  const addedToWatchlist = watchlist ? ACTIVE_STATE : '';
-  const addedToAlreadyWatched = alreadyWatched ? ACTIVE_STATE : '';
-  const addedToFavorite = favorite ? ACTIVE_STATE : '';
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -77,9 +74,9 @@ const createPopup = ({filmInfo, userDetails}) => {
         </div>
 
         <section class="film-details__controls">
-          <button type="button" class="film-details__control-button ${ addedToWatchlist } film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-          <button type="button" class="film-details__control-button ${ addedToAlreadyWatched } film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-          <button type="button" class="film-details__control-button ${ addedToFavorite } film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+          <button type="button" class="film-details__control-button ${ watchlist ? ACTIVE_STATE : '' } film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
+          <button type="button" class="film-details__control-button ${ alreadyWatched ? ACTIVE_STATE : '' } film-details__control-button--watched" id="watched" name="watched">Already watched</button>
+          <button type="button" class="film-details__control-button ${ favorite ? ACTIVE_STATE : '' } film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
         </section>
       </div>
 

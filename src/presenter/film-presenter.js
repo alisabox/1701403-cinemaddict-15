@@ -1,7 +1,6 @@
 import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
 import PopupCommentContainer from '../view/popup-comments-container.js';
-import PopupComment from '../view/popup-comment';
 import {render, remove, RenderPosition, replace} from '../view/utils.js';
 
 const Key = {
@@ -132,9 +131,6 @@ export default class Film {
     this._removeOldPopup();
     render(SiteBodyElement, this._popup, RenderPosition.BEFOREEND);
     render(this._popup.getElement().querySelector('.film-details__bottom-container'), new PopupCommentContainer(this._film), RenderPosition.BEFOREEND);
-    if (this._film.comments.length > 0) {
-      render(this._popup.getElement().querySelector('.film-details__comments-title'), new PopupComment(this._film), RenderPosition.AFTER);
-    }
     SiteBodyElement.classList.add('hide-overflow');
 
     this._popup.setRemovePopupHandler(this._handleRemovePopup);
