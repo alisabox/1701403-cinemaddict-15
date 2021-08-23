@@ -188,7 +188,7 @@ const generateAgeRating = () => {
 
 const createFilmCard = () => {
   const hasComments = Boolean(getRandomIndex(0, 1));
-  const comments = hasComments === false ? false : generateFilmComments();
+  const comments = hasComments === false ? [] : generateFilmComments();
   const watchlist = Boolean(getRandomIndex(0, 1));
   const alreadyWatched = Boolean(getRandomIndex(0, 1));
   const favorite = Boolean(getRandomIndex(0, 1));

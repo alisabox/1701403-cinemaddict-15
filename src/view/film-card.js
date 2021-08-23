@@ -16,9 +16,6 @@ const createFilmCard = (films) => {
   }
 
   const ACTIVE_STATE = 'film-card__controls-item--active';
-  const addedToWatchlist = watchlist ? ACTIVE_STATE : '';
-  const addedToAlreadyWatched = alreadyWatched ? ACTIVE_STATE : '';
-  const addedToFavorite = favorite ? ACTIVE_STATE : '';
 
   return `<article class="film-card">
   <h3 class="film-card__title">${title}</h3>
@@ -32,9 +29,9 @@ const createFilmCard = (films) => {
   <p class="film-card__description">${description}</p>
   <a class="film-card__comments">${commentText}</a>
   <div class="film-card__controls">
-    <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${ addedToWatchlist }" type="button">Add to watchlist</button>
-    <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${ addedToAlreadyWatched }" type="button">Mark as watched</button>
-    <button class="film-card__controls-item film-card__controls-item--favorite ${ addedToFavorite }" type="button">Mark as favorite</button>
+    <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${ watchlist ? ACTIVE_STATE : '' }" type="button">Add to watchlist</button>
+    <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${ alreadyWatched ? ACTIVE_STATE : '' }" type="button">Mark as watched</button>
+    <button class="film-card__controls-item film-card__controls-item--favorite ${ favorite ? ACTIVE_STATE : '' }" type="button">Mark as favorite</button>
   </div>
 </article>`;
 };
