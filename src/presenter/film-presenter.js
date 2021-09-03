@@ -17,6 +17,7 @@ export default class Film {
 
     this._filmCard = null;
     this._popup = null;
+    this._popupComments = null;
 
     this._handleRemovePopup = this._handleRemovePopup.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
@@ -34,6 +35,7 @@ export default class Film {
 
     this._filmCard = new FilmCardView(this._film);
     this._popup = new PopupView(this._film);
+    this._popupComments = new PopupCommentContainer(this._film);
 
     this._filmCard.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCard.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
@@ -130,16 +132,20 @@ export default class Film {
   _handleOpenPopup() {
     this._removeOldPopup();
     render(SiteBodyElement, this._popup, RenderPosition.BEFOREEND);
-    render(this._popup.getElement().querySelector('.film-details__bottom-container'), new PopupCommentContainer(this._film), RenderPosition.BEFOREEND);
+    render(this._popup.getElement().querySelector('.film-details__bottom-container'), this._popupComments, RenderPosition.BEFOREEND);
     SiteBodyElement.classList.add('hide-overflow');
 
     this._popup.setRemovePopupHandler(this._handleRemovePopup);
+    this._popup.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._popup.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
+    this._popup.setFavoriteClickHandler(this._handleFavoriteClick);
 
     document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
   _handleRemovePopup() {
     remove(this._popup);
+    remove(this._popupComments);
     SiteBodyElement.classList.remove('hide-overflow');
   }
 
