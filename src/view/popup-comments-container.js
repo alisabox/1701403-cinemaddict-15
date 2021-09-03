@@ -10,12 +10,8 @@ const createPopupComment = ({comments}) => {
   }
 
   const commentsList = comments.map((item) => {
-    const date = dayjs(item.date).calendar(null, {
-      sameDay: '[Today]',
-      lastDay: '[Yesterday]',
-      lastWeek: 'd [days ago]',
-      sameElse: 'YYYY/MM/DD HH:MM',
-    });
+
+    const date = dayjs(item.date).format('YYYY/MM/DD HH:mm');
 
     return `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
