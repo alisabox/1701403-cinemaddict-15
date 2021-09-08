@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import Abstract from './abstract.js';
+import Abstract from '../view/abstract.js';
 
 const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
@@ -36,6 +36,10 @@ const createElement = (template) => {
 };
 
 const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
   if (!(component instanceof Abstract)) {
     throw new Error('Can remove only components');
   }
@@ -44,19 +48,19 @@ const remove = (component) => {
   component.removeElement();
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+// const updateItem = (items, update) => {
+//   const index = items.findIndex((item) => item.id === update.id);
 
-  if (index === -1) {
-    return items;
-  }
+//   if (index === -1) {
+//     return items;
+//   }
 
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
+//   return [
+//     ...items.slice(0, index),
+//     update,
+//     ...items.slice(index + 1),
+//   ];
+// };
 
 const replace = (newChild, oldChild) => {
   if (oldChild instanceof Abstract) {
@@ -90,4 +94,24 @@ const sortByRaing = (film1, film2) => (
   film2.filmInfo.totalRating - film1.filmInfo.totalRating
 );
 
-export {RenderPosition, render, remove, createElement, updateItem, replace, SortType, sortByDate, sortByRaing};
+const UserAction = {
+  UPDATE_STATS: 'UPDATE_STATS',
+  ADD_COMMENT: 'ADD',
+  DELETE_COMMENT: 'DELETE',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const FilterType = {
+  ALL: 'all',
+  WATCHLIST: 'watchlist',
+  HISTORY: 'history',
+  FAVORITES: 'favorites',
+};
+
+export {RenderPosition, render, remove, createElement, FilterType,
+  replace, SortType, sortByDate, sortByRaing, UserAction, UpdateType};
