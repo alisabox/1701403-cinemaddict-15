@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import he from 'he';
 import calendar from 'dayjs/plugin/calendar';
 dayjs.extend(calendar);
 
@@ -18,7 +19,7 @@ const createPopupComment = ({comments}) => {
         <img src="./images/emoji/${item.emoji}.png" width="55" height="55" alt="emoji-${item.emoji}">
       </span>
       <div>
-        <p class="film-details__comment-text">${item.comment}</p>
+        <p class="film-details__comment-text">${he.encode(item.comment)}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${item.author}</span>
           <span class="film-details__comment-day">${date}</span>
@@ -75,9 +76,9 @@ export default class PopupCommentContainer extends SmartView {
     this._emojiToggleHandler = this._emojiToggleHandler.bind(this);
     this._commentTextHandler = this._commentTextHandler.bind(this);
     this._commentSubmitHandler = this._commentSubmitHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setCommentSubmitHandler();
   }
 
   getTemplate() {
@@ -95,7 +96,8 @@ export default class PopupCommentContainer extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this._setCommentSubmitHandler();
+    this.setCommentSubmitHandler(this._callback.commentSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   static parseDataToFilm(film, data) {
@@ -128,22 +130,35 @@ export default class PopupCommentContainer extends SmartView {
   }
 
   _commentSubmitHandler(evt) {
-    if (evt.key === 'Enter' && (evt.metaKey === true || evt.ctrlKey === true)) {
-
-      if (!this._data.emoji || !this._data.comment) {
-        return;
-      }
-
-      evt.preventDefault();
-      this._film = PopupCommentContainer.parseDataToFilm(this._film, this._data);
-      this._data = {};
-      this.updateElement();
-      this._scrollDown();
+    if (!this._data.emoji || !this._data.comment) {
+      return;
     }
+
+    evt.preventDefault();
+    this._film = PopupCommentContainer.parseDataToFilm(this._film, this._data);
+    this._data = {};
+    this.updateElement();
+    this._scrollDown();
+    this._callback.commentSubmit();
   }
 
-  _setCommentSubmitHandler() {
-    this.getElement().addEventListener('keydown', this._commentSubmitHandler);
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(evt);
+  }
+
+  setCommentSubmitHandler(callback) {
+    this._callback.commentSubmit = callback;
+    this.getElement().addEventListener('keydown', (evt) => {
+      if (evt.key === 'Enter' && (evt.metaKey === true || evt.ctrlKey === true)) {
+        this._commentSubmitHandler(evt);
+      }
+    });
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelectorAll('.film-details__comment-delete').forEach((comment) => comment.addEventListener('click', this._deleteClickHandler));
   }
 
   _scrollDown() {

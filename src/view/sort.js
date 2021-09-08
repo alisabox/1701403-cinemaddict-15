@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { SortType } from './utils.js';
+import { SortType } from '../utils/utils.js';
 
 const createSortElement = (currentSortType) => {
   const ACTIVE_SORT_CLASS = 'sort__button--active';
