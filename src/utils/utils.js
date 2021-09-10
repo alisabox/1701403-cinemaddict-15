@@ -48,20 +48,6 @@ const remove = (component) => {
   component.removeElement();
 };
 
-// const updateItem = (items, update) => {
-//   const index = items.findIndex((item) => item.id === update.id);
-
-//   if (index === -1) {
-//     return items;
-//   }
-
-//   return [
-//     ...items.slice(0, index),
-//     update,
-//     ...items.slice(index + 1),
-//   ];
-// };
-
 const replace = (newChild, oldChild) => {
   if (oldChild instanceof Abstract) {
     oldChild = oldChild.getElement();
@@ -113,5 +99,25 @@ const FilterType = {
   FAVORITES: 'favorites',
 };
 
-export {RenderPosition, render, remove, createElement, FilterType,
-  replace, SortType, sortByDate, sortByRaing, UserAction, UpdateType};
+const MenuItem = {
+  FILMS: 'FILMS',
+  STATS: 'STATS',
+};
+
+const intervals = {
+  ALL_TIME: 'all-time',
+  TODAY: 'today',
+  WEEK: 'week',
+  MONTH: 'month',
+  YEAR: 'year',
+};
+
+const intervalStart = {
+  [intervals.TODAY]: () => dayjs().subtract(1, 'day').toDate(),
+  [intervals.WEEK]: () => dayjs().subtract(1, 'week').toDate(),
+  [intervals.MONTH]: () => dayjs().subtract(1, 'month').toDate(),
+  [intervals.YEAR]: () => dayjs().subtract(1, 'year').toDate(),
+};
+
+export {RenderPosition, render, remove, createElement, FilterType, MenuItem,
+  replace, SortType, sortByDate, sortByRaing, UserAction, UpdateType, intervals, intervalStart};

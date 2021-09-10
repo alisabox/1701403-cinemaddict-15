@@ -1,13 +1,12 @@
 import FilterView from '../view/menu.js';
-import {render, RenderPosition, replace, remove, FilterType, UpdateType} from '../utils/utils.js';
+import {render, RenderPosition, replace, remove, FilterType, UpdateType, MenuItem} from '../utils/utils.js';
 import {filter} from '../utils/filter.js';
-
+import {handleSiteMenuClick} from './../main.js';
 export default class Filter {
   constructor(filterContainer, filterModel, filmsModel) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
-
     this._filterComponent = null;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -17,12 +16,13 @@ export default class Filter {
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
-  init() {
+  init(menuItem = MenuItem.FILMS) {
     const filters = this._getFilters();
     const prevFilterComponent = this._filterComponent;
 
-    this._filterComponent = new FilterView(filters, this._filterModel.getFilter());
+    this._filterComponent = new FilterView(filters, this._filterModel.getFilter(), menuItem);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
+    this._filterComponent.setMenuClickHandler(handleSiteMenuClick);
 
     if (prevFilterComponent === null) {
       render(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);

@@ -5,6 +5,8 @@ dayjs.extend(calendar);
 
 import SmartView from './smart.js';
 
+const ENTER_KEY = 'Enter';
+
 const createPopupComment = ({comments}) => {
   if (comments === false) {
     return '';
@@ -150,7 +152,7 @@ export default class PopupCommentContainer extends SmartView {
   setCommentSubmitHandler(callback) {
     this._callback.commentSubmit = callback;
     this.getElement().addEventListener('keydown', (evt) => {
-      if (evt.key === 'Enter' && (evt.metaKey === true || evt.ctrlKey === true)) {
+      if (evt.key === ENTER_KEY && (evt.metaKey === true || evt.ctrlKey === true)) {
         this._commentSubmitHandler(evt);
       }
     });

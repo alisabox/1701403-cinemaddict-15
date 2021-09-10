@@ -191,6 +191,7 @@ export default class Film {
   }
 
   _handleRemovePopup() {
+    this._removeOldPopup();
     remove(this._popup);
     remove(this._popupComments);
     this._popupComments._data = {};

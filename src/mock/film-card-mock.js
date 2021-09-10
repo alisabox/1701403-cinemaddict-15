@@ -177,8 +177,8 @@ const generateCountry = () => {
 };
 
 const generateWatchingDate = () => {
-  const daysGap = 14;
-  return dayjs().add(daysGap, 'day').toDate();
+  const daysGap = getRandomIndex(0, 14);
+  return dayjs().subtract(daysGap, 'day').toDate();
 };
 
 const generateAgeRating = () => {
