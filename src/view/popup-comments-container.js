@@ -6,8 +6,9 @@ dayjs.extend(calendar);
 import SmartView from './smart.js';
 
 const ENTER_KEY = 'Enter';
+const COMMENTS_LOAD_ERROR_MESSAGE = 'Couldn\'t load comments';
 
-const createPopupComment = ({comments}) => {
+const createPopupComment = (comments) => {
   if (comments === false) {
     return '';
   }
@@ -18,7 +19,7 @@ const createPopupComment = ({comments}) => {
 
     return `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${item.emoji}.png" width="55" height="55" alt="emoji-${item.emoji}">
+        <img src="./images/emoji/${item.emotion}.png" width="55" height="55" alt="emoji-${item.emotion}">
       </span>
       <div>
         <p class="film-details__comment-text">${he.encode(item.comment)}</p>
@@ -33,14 +34,12 @@ const createPopupComment = ({comments}) => {
   return `<ul class="film-details__comments-list">${commentsList}</ul>`;
 };
 
-const createPopupCommentContainer = (films, newComment) => {
-  const {comments} = films;
-
-  return `<section class="film-details__comments-wrap">
-    <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length || 0}</span></h3>
-    ${createPopupComment(films)}
+const createPopupCommentContainer = (comments, newComment) => (
+  `<section class="film-details__comments-wrap">
+    <h3 class="film-details__comments-title">${comments === COMMENTS_LOAD_ERROR_MESSAGE ? comments : `Comments <span class="film-details__comments-count">${comments.length || 0}</span>`}</h3>
+    ${comments === COMMENTS_LOAD_ERROR_MESSAGE ? '' : createPopupComment(comments)}
     <div class="film-details__new-comment">
-      <div class="film-details__add-emoji-label">${ newComment.emoji ? `<img src="images/emoji/${newComment.emoji}.png" width="55" height="55" alt="emoji-${newComment.emoji}"></img>` : '' }</div>
+      <div class="film-details__add-emoji-label">${ newComment.emotion ? `<img src="images/emoji/${newComment.emotion}.png" width="55" height="55" alt="emoji-${newComment.emotion}"></img>` : '' }</div>
 
       <label class="film-details__comment-label">
         <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${ newComment.comment ? newComment.comment : '' }</textarea>
@@ -68,12 +67,13 @@ const createPopupCommentContainer = (films, newComment) => {
         </label>
       </div>
     </div>
-  </section>`;
-};
+  </section>`
+);
 export default class PopupCommentContainer extends SmartView {
-  constructor(film) {
+  constructor(film, comments) {
     super();
     this._film = film;
+    this._comments = comments;
 
     this._emojiToggleHandler = this._emojiToggleHandler.bind(this);
     this._commentTextHandler = this._commentTextHandler.bind(this);
@@ -84,7 +84,7 @@ export default class PopupCommentContainer extends SmartView {
   }
 
   getTemplate() {
-    return createPopupCommentContainer(this._film, this._data);
+    return createPopupCommentContainer(this._comments, this._data);
   }
 
   _setInnerHandlers() {
@@ -120,7 +120,7 @@ export default class PopupCommentContainer extends SmartView {
   _emojiToggleHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      emoji: evt.target.value,
+      emotion: evt.target.value,
     });
   }
 
@@ -132,7 +132,7 @@ export default class PopupCommentContainer extends SmartView {
   }
 
   _commentSubmitHandler(evt) {
-    if (!this._data.emoji || !this._data.comment) {
+    if (!this._data.emotion || !this._data.comment) {
       return;
     }
 
@@ -140,7 +140,6 @@ export default class PopupCommentContainer extends SmartView {
     this._film = PopupCommentContainer.parseDataToFilm(this._film, this._data);
     this._data = {};
     this.updateElement();
-    this._scrollDown();
     this._callback.commentSubmit();
   }
 
@@ -163,7 +162,7 @@ export default class PopupCommentContainer extends SmartView {
     this.getElement().querySelectorAll('.film-details__comment-delete').forEach((comment) => comment.addEventListener('click', this._deleteClickHandler));
   }
 
-  _scrollDown() {
+  scrollDown() {
     const popup = document.querySelector('.film-details');
     popup.scrollTo({
       left: 0,

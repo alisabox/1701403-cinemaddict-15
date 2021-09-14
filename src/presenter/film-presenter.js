@@ -2,11 +2,17 @@ import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
 import PopupCommentContainer from '../view/popup-comments-container.js';
 import {render, remove, RenderPosition, replace, UserAction, UpdateType} from '../utils/utils.js';
+import Api from '../api.js';
 
 const Key = {
   ESC: 'Esc',
   ESCAPE: 'Escape',
 };
+const AUTHORIZATION = 'Basic 5FB2054478353FD8D';
+const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
+const COMMENTS_LOAD_ERROR_MESSAGE = 'Couldn\'t load comments';
+
+const api = new Api(END_POINT, AUTHORIZATION);
 
 const SiteBodyElement = document.querySelector('body');
 
@@ -19,6 +25,7 @@ export default class Film {
     this._filmCard = null;
     this._popup = null;
     this._popupComments = null;
+    this._commentsErrorMessage = COMMENTS_LOAD_ERROR_MESSAGE;
 
     this._handleRemovePopup = this._handleRemovePopup.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
@@ -32,13 +39,12 @@ export default class Film {
 
   init(film) {
     this._film = film;
-
+    this._comments = [];
     const prevFilmCard = this._filmCard;
     const prevPopup = this._popup;
 
     this._filmCard = new FilmCardView(this._film);
     this._popup = new PopupView(this._film);
-    this._popupComments = new PopupCommentContainer(this._film);
 
     this._filmCard.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCard.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
@@ -48,8 +54,6 @@ export default class Film {
     this._popup.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
     this._popup.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    this._popupComments.setDeleteClickHandler(this._handleDeleteClick);
-    this._popupComments.setCommentSubmitHandler(this._handleCommentSubmit);
 
     if (prevFilmCard === null || prevPopup === null) {
       this._renderFilmInfo();
@@ -153,6 +157,7 @@ export default class Film {
           ],
         },
       ),
+      this._comments[deletedCommentIndex],
     );
   }
 
@@ -170,13 +175,32 @@ export default class Film {
   _removeOldPopup() {
     if (document.querySelector('.film-details')) {
       document.querySelector('.film-details').remove();
+      this._handleRemovePopup();
     }
   }
 
   _handleOpenPopup() {
     this._removeOldPopup();
     render(SiteBodyElement, this._popup, RenderPosition.BEFOREEND);
-    render(this._popup.getElement().querySelector('.film-details__bottom-container'), this._popupComments, RenderPosition.BEFOREEND);
+
+    api.getComments(this._film.id)
+      .then((comments) => {
+        this._comments = comments;
+        this._popupComments = new PopupCommentContainer(this._film, this._comments);
+        this._popupComments.setDeleteClickHandler(this._handleDeleteClick);
+        this._popupComments.setCommentSubmitHandler(this._handleCommentSubmit);
+        render(this._popup.getElement().querySelector('.film-details__bottom-container'), this._popupComments, RenderPosition.BEFOREEND);
+        this._popupComments.scrollDown();
+      })
+      .catch(() => {
+        this._comments = this._commentsErrorMessage;
+        this._popupComments = new PopupCommentContainer(this._film, this._comments);
+        this._popupComments.setDeleteClickHandler(this._handleDeleteClick);
+        this._popupComments.setCommentSubmitHandler(this._handleCommentSubmit);
+        render(this._popup.getElement().querySelector('.film-details__bottom-container'), this._popupComments, RenderPosition.BEFOREEND);
+        this._popupComments.scrollDown();
+      });
+
     SiteBodyElement.classList.add('hide-overflow');
 
     this._popup.setRemovePopupHandler(this._handleRemovePopup);
@@ -184,26 +208,13 @@ export default class Film {
     this._popup.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
     this._popup.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    this._popupComments.setDeleteClickHandler(this._handleDeleteClick);
-    this._popupComments.setCommentSubmitHandler(this._handleCommentSubmit);
-
     document.addEventListener('keydown', this._escKeyDownHandler);
   }
 
   _handleRemovePopup() {
-    this._removeOldPopup();
     remove(this._popup);
     remove(this._popupComments);
-    this._popupComments._data = {};
     SiteBodyElement.classList.remove('hide-overflow');
-    this._changeData(
-      UserAction.ADD_COMMENT,
-      UpdateType.PATCH,
-      Object.assign(
-        {},
-        this._film,
-      ),
-    );
   }
 
   _escKeyDownHandler(evt) {

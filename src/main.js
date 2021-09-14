@@ -1,23 +1,21 @@
 import UserStatusView from './view/user.js';
-import LoadingView from './view/loading.js';
 import FooterStatsView from './view/footer-stats.js';
 import StatsView from './view/stats.js';
 import FilmsListPresenter from './presenter/films-list-presenter';
 import FilterPresenter from './presenter/filter-presenter.js';
 import FilmsModel from './model/films.js';
 import FilterModel from './model/filter.js';
-import {render, RenderPosition, MenuItem, remove} from './utils/utils.js';
+import {render, RenderPosition, MenuItem, remove, UpdateType} from './utils/utils.js';
+import Api from './api.js';
 
-import {generateFilmCards} from './mock/film-card-mock.js';
+const AUTHORIZATION = 'Basic 5FB2054478353FD8D';
+const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
 
-const MAX_FILM_CARDS = 20;
-
-const films = generateFilmCards(MAX_FILM_CARDS);
+const api = new Api(END_POINT, AUTHORIZATION);
 
 const filterModel = new FilterModel();
 
 const filmsModel = new FilmsModel();
-filmsModel.setFilms(films);
 
 const header = document.querySelector('.header');
 const main = document.querySelector('.main');
@@ -25,7 +23,7 @@ const footerStats = document.querySelector('.footer__statistics');
 
 render(header, new UserStatusView(), RenderPosition.BEFOREEND);
 
-const filmsPresenter = new FilmsListPresenter(main, filmsModel, filterModel);
+const filmsPresenter = new FilmsListPresenter(main, filmsModel, filterModel, api);
 
 let statsView = new StatsView(filmsModel.getFilms());
 
@@ -61,11 +59,17 @@ const handleSiteMenuClick = (menuItem) => {
 
 filterPresenter.init();
 filmsPresenter.init();
-render(footerStats, new FooterStatsView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
 
 
 statsView.setPeriodChangeHandler(changeStatsPeriod);
 
-LoadingView;
+
+api.getFilms().then((films) => {
+  filmsModel.setFilms(UpdateType.INIT, films);
+  render(footerStats, new FooterStatsView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
+})
+  .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
+  });
 
 export{handleSiteMenuClick};
