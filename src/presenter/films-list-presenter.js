@@ -9,10 +9,9 @@ import LoadingView from '../view/loading.js';
 import { render, remove, RenderPosition, SortType, sortByDate, sortByRaing, UpdateType, UserAction, FilterType } from '../utils/utils.js';
 import {filter} from '../utils/filter.js';
 
-import FilmPresenter from './film-presenter.js';
+import FilmPresenter, {State as FilmPresenterViewState} from './film-presenter.js';
 
 const FILM_CARDS_PER_STEP = 5;
-
 export default class FilmsList {
   constructor(pageContainer, filmsModel, filterModel, api) {
     this._filmsModel = filmsModel;
@@ -92,14 +91,24 @@ export default class FilmsList {
         });
         break;
       case UserAction.ADD_COMMENT:
-        this._api.addComment(update).then((response) => {
-          this._filmsModel.update(updateType, response);
-        });
+        this._filmsPresenter.get(update.id).setViewState(FilmPresenterViewState.SAVING);
+        this._api.addComment(update)
+          .then((response) => {
+            this._filmsModel.update(updateType, response);
+          })
+          .catch(() => {
+            this._filmsPresenter.get(update.id).setFormAborting();
+          });
         break;
       case UserAction.DELETE_COMMENT:
-        this._api.deleteComment(deletedComment).then(() => {
-          this._filmsModel.update(updateType, update);
-        });
+        this._filmsPresenter.get(update.id).setViewState(FilmPresenterViewState.DELETING, deletedComment);
+        this._api.deleteComment(deletedComment)
+          .then(() => {
+            this._filmsModel.update(updateType, update);
+          })
+          .catch(() => {
+            this._filmsPresenter.get(update.id).setCommentAborting();
+          });
         break;
     }
   }

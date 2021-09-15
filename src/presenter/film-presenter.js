@@ -8,6 +8,14 @@ const Key = {
   ESC: 'Esc',
   ESCAPE: 'Escape',
 };
+
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+};
+
+const SHAKE_ANIMATION_TIMEOUT  = 600;
+
 const AUTHORIZATION = 'Basic 5FB2054478353FD8D';
 const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
 const COMMENTS_LOAD_ERROR_MESSAGE = 'Couldn\'t load comments';
@@ -223,5 +231,48 @@ export default class Film {
       this._handleRemovePopup();
       document.removeEventListener('keydown', this._escKeyDownHandler);
     }
+  }
+
+  setViewState(state, comment) {
+    switch (state) {
+      case State.SAVING:
+        this._popupComments.updateData({
+          isDisabled: true,
+        });
+        break;
+      case State.DELETING:
+        this._popupComments.updateData({
+          isDisabled: true,
+          isDeleting: true,
+          deletingComment: comment,
+        });
+        break;
+    }
+  }
+
+  setFormAborting() {
+    this._popupComments.updateData({
+      isFormShaking: true,
+    });
+    setTimeout(() => {
+      this._popupComments.updateData({
+        isDisabled: false,
+        isFormShaking: false,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  setCommentAborting() {
+    this._popupComments.updateData({
+      isCommentShaking: true,
+    });
+    setTimeout(() => {
+      this._popupComments.updateData({
+        isDisabled: false,
+        isDeleting: false,
+        isCommentShaking: false,
+        deletingComment: null,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }
