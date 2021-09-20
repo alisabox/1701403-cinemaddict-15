@@ -1,8 +1,9 @@
 import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
 import PopupCommentContainer from '../view/popup-comments-container.js';
-import {render, remove, RenderPosition, replace, UserAction, UpdateType} from '../utils/utils.js';
-import Api from '../api.js';
+import {render, remove, RenderPosition, replace, UserAction, UpdateType, isOnline} from '../utils/utils.js';
+import {toast} from '../utils/toast.js';
+import Api from '../api/api.js';
 
 const Key = {
   ESC: 'Esc',
@@ -149,6 +150,11 @@ export default class Film {
   }
 
   _handleDeleteClick(evt) {
+    if (!isOnline()) {
+      toast('You can\'t delete comment offline');
+      return;
+    }
+
     const listOfComments = Array.from(this._popupComments.getElement().querySelectorAll('.film-details__comment'));
     const deletedCommentIndex = listOfComments.indexOf(evt.target.parentElement.parentElement.parentElement);
     this._changeData(
@@ -170,6 +176,11 @@ export default class Film {
   }
 
   _handleCommentSubmit() {
+    if (!isOnline()) {
+      toast('You can\'t add comment offline');
+      return;
+    }
+
     this._changeData(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,

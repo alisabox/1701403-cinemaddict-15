@@ -120,5 +120,7 @@ const intervalStart = {
   [intervals.YEAR]: () => dayjs().subtract(1, 'year').toDate(),
 };
 
-export {RenderPosition, render, remove, createElement, FilterType, MenuItem,
+const isOnline = () => window.navigator.onLine;
+
+export {RenderPosition, render, remove, createElement, FilterType, MenuItem, isOnline,
   replace, SortType, sortByDate, sortByRaing, UserAction, UpdateType, intervals, intervalStart};
