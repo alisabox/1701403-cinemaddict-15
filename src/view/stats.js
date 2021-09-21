@@ -5,7 +5,7 @@ dayjs.extend(isBetween);
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import AbstractView from './abstract.js';
-import { intervals, intervalStart, Statuses, StatusRates } from './../utils/utils.js';
+import { intervals, intervalStart, statuses, StatusRates } from './../utils/utils.js';
 const BAR_HEIGHT = 50;
 
 const renderChart = (chart, sortedGenres)  => (new Chart(chart, {
@@ -165,7 +165,7 @@ export default class Stats extends AbstractView {
 
   _getStatus() {
     const numberOfWatchedFilms = this._films.filter((film) => film.userDetails.alreadyWatched).length;
-    return Statuses[Statuses.findIndex((item) => numberOfWatchedFilms <= StatusRates[item])];
+    return statuses[statuses.findIndex((item) => numberOfWatchedFilms <= StatusRates[item])];
   }
 
   _setChart() {

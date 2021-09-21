@@ -23,7 +23,7 @@ const COMMENTS_LOAD_ERROR_MESSAGE = 'Couldn\'t load comments';
 
 const api = new Api(END_POINT, AUTHORIZATION);
 
-const SiteBodyElement = document.querySelector('body');
+const siteBodyElement = document.querySelector('body');
 
 export default class Film {
   constructor(container, changeData, changeModel) {
@@ -74,7 +74,7 @@ export default class Film {
       this._filmCard.setOpenPopupHandler(this._handleOpenPopup);
     }
 
-    if (SiteBodyElement.querySelector('.film-details')) {
+    if (siteBodyElement.querySelector('.film-details')) {
       replace(this._popup, prevPopup);
       this._handleOpenPopup();
     }
@@ -200,7 +200,7 @@ export default class Film {
 
   _handleOpenPopup() {
     this._removeOldPopup();
-    render(SiteBodyElement, this._popup, RenderPosition.BEFOREEND);
+    render(siteBodyElement, this._popup, RenderPosition.BEFOREEND);
 
     api.getComments(this._film.id)
       .then((comments) => {
@@ -220,7 +220,7 @@ export default class Film {
         this._popupComments.scrollDown();
       });
 
-    SiteBodyElement.classList.add('hide-overflow');
+    siteBodyElement.classList.add('hide-overflow');
 
     this._popup.setRemovePopupHandler(this._handleRemovePopup);
     this._popup.setWatchlistClickHandler(this._handleWatchlistClick);
@@ -233,7 +233,7 @@ export default class Film {
   _handleRemovePopup() {
     remove(this._popup);
     remove(this._popupComments);
-    SiteBodyElement.classList.remove('hide-overflow');
+    siteBodyElement.classList.remove('hide-overflow');
   }
 
   _escKeyDownHandler(evt) {

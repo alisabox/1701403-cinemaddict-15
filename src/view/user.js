@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import {Statuses, StatusRates} from './../utils/utils.js';
+import {statuses, StatusRates} from './../utils/utils.js';
 
 const createUserStatus = (status) => (
   `<section class="header__profile profile">
@@ -20,6 +20,6 @@ export default class UserStatus extends AbstractView {
 
   _getStatus() {
     const numberOfWatchedFilms = this._watchedFilms.length;
-    return Statuses[Statuses.findIndex((item) => numberOfWatchedFilms <= StatusRates[item])];
+    return statuses[statuses.findIndex((item) => numberOfWatchedFilms <= StatusRates[item])];
   }
 }
