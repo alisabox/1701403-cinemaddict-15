@@ -1,4 +1,3 @@
-import UserStatusView from './view/user.js';
 import FooterStatsView from './view/footer-stats.js';
 import StatsView from './view/stats.js';
 import FilmsListPresenter from './presenter/films-list-presenter';
@@ -24,11 +23,8 @@ const filterModel = new FilterModel();
 
 const filmsModel = new FilmsModel();
 
-const header = document.querySelector('.header');
 const main = document.querySelector('.main');
 const footerStats = document.querySelector('.footer__statistics');
-
-render(header, new UserStatusView(), RenderPosition.BEFOREEND);
 
 const filmsPresenter = new FilmsListPresenter(main, filmsModel, filterModel, apiWithProvider);
 

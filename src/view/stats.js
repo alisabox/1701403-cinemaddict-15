@@ -5,7 +5,7 @@ dayjs.extend(isBetween);
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import AbstractView from './abstract.js';
-import { intervals, intervalStart } from './../utils/utils.js';
+import { intervals, intervalStart, Statuses, StatusRates } from './../utils/utils.js';
 const BAR_HEIGHT = 50;
 
 const renderChart = (chart, sortedGenres)  => (new Chart(chart, {
@@ -65,14 +65,14 @@ const renderChart = (chart, sortedGenres)  => (new Chart(chart, {
   },
 }));
 
-const createStats = (films, topGenre, period) => {
+const createStats = (films, status, topGenre, period) => {
   const watchlistCount = films.length;
   const totalDuration = films.reduce((prevValue, currValue) => prevValue + currValue.filmInfo.runtime, 0);
   return `<section class="statistic">
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">Movie buff</span>
+      <span class="statistic__rank-label">${status}</span>
     </p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -128,7 +128,7 @@ export default class Stats extends AbstractView {
   }
 
   getTemplate() {
-    return createStats(this._filterFilms(), this._getTopGenre(), this._period);
+    return createStats(this._filterFilms(), this._getStatus(), this._getTopGenre(), this._period);
   }
 
   _filterFilms() {
@@ -161,6 +161,11 @@ export default class Stats extends AbstractView {
       return;
     }
     return this._getGenres()[0][0];
+  }
+
+  _getStatus() {
+    const numberOfWatchedFilms = this._films.filter((film) => film.userDetails.alreadyWatched).length;
+    return Statuses[Statuses.findIndex((item) => numberOfWatchedFilms <= StatusRates[item])];
   }
 
   _setChart() {

@@ -29,6 +29,10 @@ export default class Films extends AbstractObserver {
       .slice(0, FILM_EXTRA_CARDS);
   }
 
+  getWatchedFilms() {
+    return this._films.slice().filter((film) => film.userDetails.alreadyWatched);
+  }
+
   update(updateType, update) {
     const index = this._films.findIndex((film) => film.id === update.id);
 

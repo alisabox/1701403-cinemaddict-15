@@ -47,6 +47,26 @@ export default class Provider {
     return Promise.resolve(film);
   }
 
+  addComment(film) {
+    if (isOnline()) {
+      return this._api.addComment(film)
+        .then((newFilm) => {
+          this._store.setItem(newFilm.id, FilmsModel.adaptToServer(newFilm));
+          return newFilm;
+        });
+    }
+
+    return Promise.reject(new Error('Add comment failed'));
+  }
+
+  deleteComment(comment) {
+    if (isOnline()) {
+      return this._api.deleteComment(comment);
+    }
+
+    return Promise.reject(new Error('Delete comment failed'));
+  }
+
   sync() {
     if (isOnline()) {
       const storeFilms = Object.values(this._store.getItems());

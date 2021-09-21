@@ -122,5 +122,12 @@ const intervalStart = {
 
 const isOnline = () => window.navigator.onLine;
 
-export {RenderPosition, render, remove, createElement, FilterType, MenuItem, isOnline,
+const Statuses = ['Novice', 'Fan', 'Movie Buff'];
+const StatusRates = {
+  'Novice': 10,
+  'Fan': 20,
+  'Movie Buff': Infinity,
+};
+
+export {RenderPosition, render, remove, createElement, FilterType, MenuItem, isOnline, Statuses, StatusRates,
   replace, SortType, sortByDate, sortByRaing, UserAction, UpdateType, intervals, intervalStart};

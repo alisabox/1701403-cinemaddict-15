@@ -6,11 +6,13 @@ import FilmsTopRatedView from '../view/film-container-top-rated.js';
 import FilmsMostCommentedView from '../view/film-container-most-commented.js';
 import EmptyListView from '../view/film-empty-list.js';
 import LoadingView from '../view/loading.js';
+import UserStatusView from '../view/user.js';
 import { render, remove, RenderPosition, SortType, sortByDate, sortByRaing, UpdateType, UserAction, FilterType } from '../utils/utils.js';
 import {filter} from '../utils/filter.js';
 
 import FilmPresenter, {State as FilmPresenterViewState} from './film-presenter.js';
 
+const header = document.querySelector('.header');
 const FILM_CARDS_PER_STEP = 5;
 export default class FilmsList {
   constructor(pageContainer, filmsModel, filterModel, api) {
@@ -83,6 +85,17 @@ export default class FilmsList {
     return this._filmsModel.getMostCommentedFilms();
   }
 
+  _getWatchedFilms() {
+    return this._filmsModel.getWatchedFilms();
+  }
+
+  _renderUserStatus() {
+    if (this._getWatchedFilms().length > 0) {
+      this._userStatus = new UserStatusView(this._getWatchedFilms());
+      render(header, this._userStatus, RenderPosition.BEFOREEND);
+    }
+  }
+
   _handleViewAction(actionType, updateType, update, deletedComment) {
     switch (actionType) {
       case UserAction.UPDATE_STATS:
@@ -91,23 +104,48 @@ export default class FilmsList {
         });
         break;
       case UserAction.ADD_COMMENT:
-        this._filmsPresenter.get(update.id).setViewState(FilmPresenterViewState.SAVING);
+        if (this._filmsPresenter.has(update.id) && this._filmsPresenter.get(update.id)._popupComments) {
+          this._filmsPresenter.get(update.id).setViewState(FilmPresenterViewState.SAVING);
+        } else if (this._filmsTopRatedPresenter.has(update.id) && this._filmsTopRatedPresenter.get(update.id)._popupComments) {
+          this._filmsTopRatedPresenter.get(update.id).setViewState(FilmPresenterViewState.SAVING);
+        } else if (this._filmsMostCommentedPresenter.has(update.id) && this._filmsMostCommentedPresenter.get(update.id)._popupComments) {
+          this._filmsMostCommentedPresenter.get(update.id).setViewState(FilmPresenterViewState.SAVING);
+        }
         this._api.addComment(update)
           .then((response) => {
             this._filmsModel.update(updateType, response);
           })
           .catch(() => {
-            this._filmsPresenter.get(update.id).setFormAborting();
+            if (this._filmsPresenter.get(update.id) && this._filmsPresenter.get(update.id)._popupComments) {
+              this._filmsPresenter.get(update.id).setFormAborting();
+            } else if (this._filmsTopRatedPresenter.has(update.id) && this._filmsTopRatedPresenter.has(update.id)._popupComments) {
+              this._filmsTopRatedPresenter.get(update.id).setFormAborting();
+            } else if (this._filmsMostCommentedPresenter.has(update.id) && this._filmsMostCommentedPresenter.has(update.id)._popupComments) {
+              this._filmsMostCommentedPresenter.get(update.id).setFormAborting();
+            }
           });
         break;
       case UserAction.DELETE_COMMENT:
-        this._filmsPresenter.get(update.id).setViewState(FilmPresenterViewState.DELETING, deletedComment);
-        this._api.deleteComment(deletedComment)
+        if (this._filmsPresenter.has(update.id) && this._filmsPresenter.get(update.id)._popupComments) {
+          this._filmsPresenter.get(update.id).setViewState(FilmPresenterViewState.DELETING, deletedComment);
+        } else if (this._filmsTopRatedPresenter.has(update.id) && this._filmsTopRatedPresenter.get(update.id)._popupComments) {
+          this._filmsTopRatedPresenter.get(update.id).setViewState(FilmPresenterViewState.DELETING, deletedComment);
+        } else if (this._filmsMostCommentedPresenter.has(update.id) && this._filmsMostCommentedPresenter.get(update.id)._popupComments) {
+          this._filmsMostCommentedPresenter.get(update.id).setViewState(FilmPresenterViewState.DELETING, deletedComment);
+        }
+        this._api.deleteComment(deletedComment, update)
           .then(() => {
             this._filmsModel.update(updateType, update);
           })
           .catch(() => {
             this._filmsPresenter.get(update.id).setCommentAborting();
+            if (this._filmsPresenter.has(update.id) && this._filmsPresenter.get(update.id)._popupComments) {
+              this._filmsPresenter.get(update.id).setCommentAborting();
+            } else if (this._filmsTopRatedPresenter.has(update.id) && this._filmsTopRatedPresenter.get(update.id)._popupComments) {
+              this._filmsTopRatedPresenter.get(update.id).setCommentAborting();
+            } else if (this._filmsMostCommentedPresenter.has(update.id) && this._filmsMostCommentedPresenter.get(update.id)._popupComments) {
+              this._filmsMostCommentedPresenter.get(update.id).setCommentAborting();
+            }
           });
         break;
     }
@@ -125,6 +163,8 @@ export default class FilmsList {
         if (this._filmsMostCommentedPresenter.has(film.id)) {
           this._filmsMostCommentedPresenter.get(film.id).init(film);
         }
+        remove(this._filmsMostCommented);
+        this._renderFilmsMostCommented();
         break;
       case UpdateType.MINOR:
         if (this._filmsPresenter.has(film.id)) {
@@ -215,6 +255,7 @@ export default class FilmsList {
     remove(this._showMoreButton);
     remove(this._filmsTopRated);
     remove(this._filmsMostCommented);
+    remove(this._userStatus);
 
     if (resetRenderedFilmsCount) {
       this._shownFilmsCount = FILM_CARDS_PER_STEP;
@@ -276,7 +317,7 @@ export default class FilmsList {
     if (this._emptyList) {
       remove(this._emptyList);
     }
-
+    this._renderUserStatus();
     this._renderFilmsListContainer();
     this._renderListContainer();
     this._renderFilmsTopRated();
