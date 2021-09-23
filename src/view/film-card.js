@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract.js';
 
+const ACTIVE_STATE = 'film-card__controls-item--active';
+
 const createFilmCard = (films) => {
   const {filmInfo, comments, userDetails} = films;
   const {title, totalRating, genre, description, poster, release} = filmInfo;
@@ -14,8 +16,6 @@ const createFilmCard = (films) => {
   } else {
     commentText = '0 comments';
   }
-
-  const ACTIVE_STATE = 'film-card__controls-item--active';
 
   return `<article class="film-card">
   <h3 class="film-card__title">${title}</h3>
@@ -50,26 +50,6 @@ export default class FilmCard extends AbstractView {
     return createFilmCard(this._films);
   }
 
-  _openPopupHandler(evt) {
-    evt.preventDefault();
-    this._callback.click();
-  }
-
-  _watchlistClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.watchlistClick();
-  }
-
-  _alreadyWatchedClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.alreadyWatchedClick();
-  }
-
-  _favoriteClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  }
-
   setOpenPopupHandler(callback) {
     this._callback.click = callback;
     this.getElement().querySelector('.film-card__poster').addEventListener('click', this._openPopupHandler);
@@ -90,5 +70,25 @@ export default class FilmCard extends AbstractView {
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._favoriteClickHandler);
+  }
+
+  _openPopupHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  _watchlistClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.watchlistClick();
+  }
+
+  _alreadyWatchedClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.alreadyWatchedClick();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 }

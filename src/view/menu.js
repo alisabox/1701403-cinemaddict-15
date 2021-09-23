@@ -31,6 +31,16 @@ export default class SiteMenu extends AbstractView {
     return createMenuElement(this._filters, this._currentFilter, this._menuItem);
   }
 
+  setFilterTypeChangeHandler(callback) {
+    this._callback.filterTypeChange = callback;
+    this.getElement().addEventListener('click', this._filterTypeChangeHandler);
+  }
+
+  setMenuClickHandler(callback) {
+    this._callback.menuClick = callback;
+    this.getElement().addEventListener('click', this._menuClickHandler);
+  }
+
   _filterTypeChangeHandler(evt) {
     evt.preventDefault();
     if(!evt.target.href) {
@@ -41,11 +51,6 @@ export default class SiteMenu extends AbstractView {
       return;
     }
     this._callback.filterTypeChange(changedFilter);
-  }
-
-  setFilterTypeChangeHandler(callback) {
-    this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener('click', this._filterTypeChangeHandler);
   }
 
   _menuClickHandler(evt) {
@@ -61,10 +66,5 @@ export default class SiteMenu extends AbstractView {
       this._menuItem = MenuItem.FILMS;
       this._callback.menuClick(MenuItem.FILMS);
     }
-  }
-
-  setMenuClickHandler(callback) {
-    this._callback.menuClick = callback;
-    this.getElement().addEventListener('click', this._menuClickHandler);
   }
 }

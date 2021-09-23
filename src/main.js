@@ -8,6 +8,7 @@ import {render, RenderPosition, MenuItem, remove, UpdateType} from './utils/util
 import Api from './api/api.js';
 import Store from './api/store.js';
 import Provider from './api/provider.js';
+import {toast} from './utils/toast.js';
 
 const AUTHORIZATION = 'Basic 5FB2054478353FD8D';
 const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
@@ -23,26 +24,26 @@ const filterModel = new FilterModel();
 
 const filmsModel = new FilmsModel();
 
-const main = document.querySelector('.main');
-const footerStats = document.querySelector('.footer__statistics');
+const mainElement = document.querySelector('.main');
+const footerStatsElement = document.querySelector('.footer__statistics');
 
-const filmsPresenter = new FilmsListPresenter(main, filmsModel, filterModel, apiWithProvider);
+const filmsPresenter = new FilmsListPresenter(mainElement, filmsModel, filterModel, apiWithProvider);
 
 let statsView = new StatsView(filmsModel.getFilms());
 
 const changeStatsPeriod = (evt) => {
   remove(statsView);
   statsView = new StatsView(filmsModel.getFilms(), evt.target.value);
-  render(main, statsView, RenderPosition.BEFOREEND);
+  render(mainElement, statsView, RenderPosition.BEFOREEND);
   statsView.setPeriodChangeHandler(changeStatsPeriod);
 };
 
-const filterPresenter = new FilterPresenter(main, filterModel, filmsModel);
+const filterPresenter = new FilterPresenter(mainElement, filterModel, filmsModel);
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.FILMS:
-      if (main.querySelector('.films')) {
+      if (mainElement.querySelector('.films')) {
         return;
       }
       remove(statsView);
@@ -51,10 +52,11 @@ const handleSiteMenuClick = (menuItem) => {
       break;
     case MenuItem.STATS:
       filmsPresenter.destroy();
+      filmsPresenter.renderUserStatus();
       filterPresenter.init(MenuItem.STATS);
       statsView = new StatsView(filmsModel.getFilms());
       statsView.setPeriodChangeHandler(changeStatsPeriod);
-      render(main, statsView, RenderPosition.BEFOREEND);
+      render(mainElement, statsView, RenderPosition.BEFOREEND);
       break;
   }
 };
@@ -69,7 +71,7 @@ statsView.setPeriodChangeHandler(changeStatsPeriod);
 
 apiWithProvider.getFilms().then((films) => {
   filmsModel.setFilms(UpdateType.INIT, films);
-  render(footerStats, new FooterStatsView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
+  render(footerStatsElement, new FooterStatsView(filmsModel.getFilms()), RenderPosition.BEFOREEND);
 })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
@@ -82,10 +84,12 @@ window.addEventListener('load', () => {
 window.addEventListener('online', () => {
   document.title = document.title.replace(' [offline]', '');
   apiWithProvider.sync();
+  toast('You are back online');
 });
 
 window.addEventListener('offline', () => {
   document.title += ' [offline]';
+  toast('You are offline');
 });
 
 export{handleSiteMenuClick};

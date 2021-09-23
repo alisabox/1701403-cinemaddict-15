@@ -63,7 +63,6 @@ export default class Film {
     this._popup.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
     this._popup.setFavoriteClickHandler(this._handleFavoriteClick);
 
-
     if (prevFilmCard === null || prevPopup === null) {
       this._renderFilmInfo();
       return;
@@ -83,16 +82,88 @@ export default class Film {
     remove(prevPopup);
   }
 
+  setViewState(state, comment) {
+    switch (state) {
+      case State.SAVING:
+        this._popupComments.updateData({
+          isDisabled: true,
+        });
+        break;
+      case State.DELETING:
+        this._popupComments.updateData({
+          isDisabled: true,
+          isDeleting: true,
+          deletingComment: comment,
+        });
+        break;
+    }
+  }
+
+  setFormAborting() {
+    this._popupComments.updateData({
+      isFormShaking: true,
+    });
+    setTimeout(() => {
+      this._popupComments.updateData({
+        isDisabled: false,
+        isFormShaking: false,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  setCommentAborting() {
+    this._popupComments.updateData({
+      isCommentShaking: true,
+    });
+    setTimeout(() => {
+      this._popupComments.updateData({
+        isDisabled: false,
+        isDeleting: false,
+        isCommentShaking: false,
+        deletingComment: null,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   _renderFilmInfo() {
     this._filmCard.setOpenPopupHandler(this._handleOpenPopup);
 
     render(this._filmContainer, this._filmCard, RenderPosition.BEFOREEND);
   }
 
+  _removeOldPopup() {
+    if (document.querySelector('.film-details')) {
+      document.querySelector('.film-details').remove();
+      this._handleRemovePopup();
+    }
+  }
+
+  renderNewComments() {
+    const prevComments = this._popupComments;
+    api.getComments(this._film.id)
+      .then((comments) => {
+        this._comments = comments;
+        remove(prevComments);
+        this._popupComments = new PopupCommentContainer(this._film, this._comments);
+        this._popupComments.setDeleteClickHandler(this._handleDeleteClick);
+        this._popupComments.setCommentSubmitHandler(this._handleCommentSubmit);
+        render(this._popup.getElement().querySelector('.film-details__bottom-container'), this._popupComments, RenderPosition.BEFOREEND);
+        this._popupComments.scrollDown();
+      });
+  }
+
+  _escKeyDownHandler(evt) {
+    if (evt.key === Key.ESCAPE || evt.key === Key.ESC) {
+      evt.preventDefault();
+      this._handleRemovePopup();
+      document.removeEventListener('keydown', this._escKeyDownHandler);
+    }
+  }
+
   _handleWatchlistClick() {
     this._changeData(
       UserAction.UPDATE_STATS,
-      UpdateType.MINOR,
+      UpdateType.WATCHLIST,
       Object.assign(
         {},
         this._film,
@@ -112,7 +183,7 @@ export default class Film {
   _handleAlreadyWatchedClick() {
     this._changeData(
       UserAction.UPDATE_STATS,
-      UpdateType.MINOR,
+      UpdateType.HISTORY,
       Object.assign(
         {},
         this._film,
@@ -132,7 +203,7 @@ export default class Film {
   _handleFavoriteClick() {
     this._changeData(
       UserAction.UPDATE_STATS,
-      UpdateType.MINOR,
+      UpdateType.FAVORITES,
       Object.assign(
         {},
         this._film,
@@ -177,10 +248,14 @@ export default class Film {
 
   _handleCommentSubmit() {
     if (!isOnline()) {
-      toast('You can\'t add comment offline');
+      this._popupComments.updateData({
+        isFormShaking: true,
+      });
       return;
     }
-
+    this._popupComments.updateData({
+      isFormShaking: false,
+    });
     this._changeData(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
@@ -189,13 +264,6 @@ export default class Film {
         this._film,
       ),
     );
-  }
-
-  _removeOldPopup() {
-    if (document.querySelector('.film-details')) {
-      document.querySelector('.film-details').remove();
-      this._handleRemovePopup();
-    }
   }
 
   _handleOpenPopup() {
@@ -209,15 +277,15 @@ export default class Film {
         this._popupComments.setDeleteClickHandler(this._handleDeleteClick);
         this._popupComments.setCommentSubmitHandler(this._handleCommentSubmit);
         render(this._popup.getElement().querySelector('.film-details__bottom-container'), this._popupComments, RenderPosition.BEFOREEND);
-        this._popupComments.scrollDown();
+        // this._popupComments.scrollDown();
       })
       .catch(() => {
-        this._comments = this._commentsErrorMessage;
-        this._popupComments = new PopupCommentContainer(this._film, this._comments);
+        this._comments = [];
+        const notLoaded = true;
+        this._popupComments = new PopupCommentContainer(this._film, this._comments, notLoaded);
         this._popupComments.setDeleteClickHandler(this._handleDeleteClick);
         this._popupComments.setCommentSubmitHandler(this._handleCommentSubmit);
         render(this._popup.getElement().querySelector('.film-details__bottom-container'), this._popupComments, RenderPosition.BEFOREEND);
-        this._popupComments.scrollDown();
       });
 
     siteBodyElement.classList.add('hide-overflow');
@@ -234,56 +302,5 @@ export default class Film {
     remove(this._popup);
     remove(this._popupComments);
     siteBodyElement.classList.remove('hide-overflow');
-  }
-
-  _escKeyDownHandler(evt) {
-    if (evt.key === Key.ESCAPE || evt.key === Key.ESC) {
-      evt.preventDefault();
-      this._handleRemovePopup();
-      document.removeEventListener('keydown', this._escKeyDownHandler);
-    }
-  }
-
-  setViewState(state, comment) {
-    switch (state) {
-      case State.SAVING:
-        this._popupComments.updateData({
-          isDisabled: true,
-        });
-        break;
-      case State.DELETING:
-        this._popupComments.updateData({
-          isDisabled: true,
-          isDeleting: true,
-          deletingComment: comment,
-        });
-        break;
-    }
-  }
-
-  setFormAborting() {
-    this._popupComments.updateData({
-      isFormShaking: true,
-    });
-    setTimeout(() => {
-      this._popupComments.updateData({
-        isDisabled: false,
-        isFormShaking: false,
-      });
-    }, SHAKE_ANIMATION_TIMEOUT);
-  }
-
-  setCommentAborting() {
-    this._popupComments.updateData({
-      isCommentShaking: true,
-    });
-    setTimeout(() => {
-      this._popupComments.updateData({
-        isDisabled: false,
-        isDeleting: false,
-        isCommentShaking: false,
-        deletingComment: null,
-      });
-    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

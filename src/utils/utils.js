@@ -36,7 +36,7 @@ const createElement = (template) => {
 };
 
 const remove = (component) => {
-  if (component === null) {
+  if (component === null || component === undefined) {
     return;
   }
 
@@ -88,6 +88,9 @@ const UserAction = {
 
 const UpdateType = {
   PATCH: 'PATCH',
+  FAVORITES: 'FAVORITES',
+  WATCHLIST: 'WATCHLIST',
+  HISTORY: 'HISTORY',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',

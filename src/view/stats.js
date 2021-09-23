@@ -43,7 +43,7 @@ const renderChart = (chart, sortedGenres)  => (new Chart(chart, {
           display: false,
           drawBorder: false,
         },
-        barThickness: BAR_HEIGHT,
+        barThickness: 24,
       }],
       xAxes: [{
         ticks: {
@@ -66,7 +66,6 @@ const renderChart = (chart, sortedGenres)  => (new Chart(chart, {
 }));
 
 const createStats = (films, status, topGenre, period) => {
-  const watchlistCount = films.length;
   const totalDuration = films.reduce((prevValue, currValue) => prevValue + currValue.filmInfo.runtime, 0);
   return `<section class="statistic">
     <p class="statistic__rank">
@@ -97,7 +96,7 @@ const createStats = (films, status, topGenre, period) => {
     <ul class="statistic__text-list">
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">You watched</h4>
-        <p class="statistic__item-text">${ watchlistCount } <span class="statistic__item-description">${ watchlistCount.length === 1 ? 'movie' : 'movies' }</span></p>
+        <p class="statistic__item-text">${ films.length } <span class="statistic__item-description">${ films.length === 1 ? 'movie' : 'movies' }</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
@@ -129,13 +128,6 @@ export default class Stats extends AbstractView {
 
   getTemplate() {
     return createStats(this._filterFilms(), this._getStatus(), this._getTopGenre(), this._period);
-  }
-
-  _filterFilms() {
-    if (this._period === intervals.ALL_TIME) {
-      return this._films.filter((film) => film.userDetails.alreadyWatched);
-    }
-    return this._films.filter((film) => film.userDetails.alreadyWatched && dayjs(film.userDetails.watchingDate).isBetween(intervalStart[this._period](), dayjs().toDate()));
   }
 
   _getGenres() {
@@ -178,12 +170,20 @@ export default class Stats extends AbstractView {
     }
 
     const chart = this.getElement().querySelector('.statistic__chart');
+    chart.height = BAR_HEIGHT * this._getGenres().length;
     this._chart = renderChart(chart, this._getGenres());
   }
 
   setPeriodChangeHandler(callback) {
     this._callback.changePeriod = callback;
     this.getElement().querySelector('.statistic__filters').addEventListener('input', this._periodChangeHandler);
+  }
+
+  _filterFilms() {
+    if (this._period === intervals.ALL_TIME) {
+      return this._films.filter((film) => film.userDetails.alreadyWatched);
+    }
+    return this._films.filter((film) => film.userDetails.alreadyWatched && dayjs(film.userDetails.watchingDate).isBetween(intervalStart[this._period](), dayjs().toDate()));
   }
 
   _periodChangeHandler(evt) {

@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract.js';
 
+const ACTIVE_STATE = 'film-details__control-button--active';
+
 const createPopup = ({filmInfo, userDetails}) => {
   const { title, totalRating, genre, description, poster, ageRating, alternativeTitle, director, release, writers, actors } = filmInfo;
   const { watchlist, alreadyWatched, favorite } = userDetails;
@@ -8,8 +10,6 @@ const createPopup = ({filmInfo, userDetails}) => {
   const releaseDate = dayjs(release.date).format('D MMMM YYYY');
   const duration = filmInfo.runtime > 60 ? `${Math.floor(filmInfo.runtime / 60)}h ${filmInfo.runtime % 60}m` : `${filmInfo.runtime}m`;
   const genresList = genre.map((item) => `<span class="film-details__genre">${item}</span>`).join('');
-
-  const ACTIVE_STATE = 'film-details__control-button--active';
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -100,29 +100,9 @@ export default class Popup extends AbstractView {
     return createPopup(this._films);
   }
 
-  _removePopupHandler(evt) {
-    evt.preventDefault();
-    this._callback.click();
-  }
-
   setRemovePopupHandler(callback) {
     this._callback.click = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._removePopupHandler);
-  }
-
-  _watchlistClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.watchlistClick();
-  }
-
-  _alreadyWatchedClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.alreadyWatchedClick();
-  }
-
-  _favoriteClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick();
   }
 
   setWatchlistClickHandler(callback) {
@@ -138,5 +118,25 @@ export default class Popup extends AbstractView {
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._favoriteClickHandler);
+  }
+
+  _removePopupHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  _watchlistClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.watchlistClick();
+  }
+
+  _alreadyWatchedClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.alreadyWatchedClick();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 }
